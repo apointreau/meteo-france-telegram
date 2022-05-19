@@ -58,14 +58,13 @@ def get_precise_date_forecast(update, context):
         return
 
     chat_id = str(update.message.chat_id)
-    results = get24h_forecast(city_per_chat_id.get(chat_id),
+    results, last_update = get24h_forecast(city_per_chat_id.get(chat_id),
                               client_per_chat_id.get(chat_id),
-                              datetime.now()+ timedelta(days=int(context.args[0])),
-                              datetime.now() + timedelta(days=int(context.args[0]) + 1))
+                              datetime.now()+ timedelta(days=int(context.args[0]) ))
     
     pretty_printed_results = ("Voici les previsions pour : " + 
                 str(city_per_chat_id.get(chat_id)) +' à '+ datetime.now().strftime('%H:%M')
-                +'\n\n\n' )
+                +'.\n\nDernière mise à jour le '+last_update.strftime('%d/%m @ %Hh%M')+'.\n\n' )
     pretty_printed_results += pretty_print_results(results)
     update.message.reply_text(pretty_printed_results)
 

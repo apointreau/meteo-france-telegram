@@ -25,7 +25,9 @@ icon_to_emoji = {
     "p24n": '\U0001F9CA',
     "p24j": '\U0001F9CA',
     "p16bisj": '\U000026C8',
-    "p16bisn": '\U000026C8'
+    "p16bisn": '\U000026C8',
+    "p14bisn" : '\U0001F327', # Averses
+    "p14bisj" : '\U0001F327', # Averses
 }
 
 def look_for_city(city: str) :
@@ -37,23 +39,24 @@ def look_for_city(city: str) :
 
     return None, None
 
-def get24h_forecast(city, client, date_from, date_till) :
+def get24h_forecast(city, client, date) :
     """Test classical workflow usage with the Python library."""
     
     
     forecast_results=[]
-
+    local_tz = timezone('Europe/PARIS')
     # Fetch weather forecast for the location
     my_place_weather_forecast = client.get_forecast_for_place(city)
-
+    last_update = utc.localize(datetime.utcfromtimestamp(
+                                    my_place_weather_forecast.updated_on))
+    last_update = last_update.astimezone(local_tz)
+    
     # Get the daily forecast
     my_place_daily_forecast = my_place_weather_forecast.forecast
-    local_tz = timezone('Europe/PARIS')
+    
     # print(my_place_daily_forecast)
-    date_from = local_tz.localize(date_from)
-    
-    date_till = local_tz.localize(date_till)
-    
+    date = local_tz.localize(date)
+        
     # now.astimezone(timezone('Europe/Paris'))
     
     for e in my_place_daily_forecast:
@@ -61,20 +64,20 @@ def get24h_forecast(city, client, date_from, date_till) :
         forecast_date = utc.localize(datetime.utcfromtimestamp(e['dt']))
         forecast_date = forecast_date.astimezone(local_tz)
 
-        if forecast_date < date_from:
+        if forecast_date.day < date.day:
             pass
-
-        elif forecast_date >= date_from and forecast_date < date_till :
-            #print(french_days[forecast_date.weekday()],
-                  #forecast_date.strftime('%d/%m à %Hh'))
-            #print(e['weather']['desc'], e['weather']['icon'])
-            forecast_results.append((forecast_date, e['weather']['desc'],
-                                    e['weather']['icon'], e['T']['value'], 
-                                    e['rain'].get('1h'), e['clouds']))
-        else:
+        elif forecast_date.day > date.day:
             break
+        else : 
+            if ((date.day == datetime.now().day and forecast_date >= date)
+                    or  date.day != datetime.now().day ):
+                    
+                    forecast_results.append((forecast_date, e['weather']['desc'],
+                                            e['weather']['icon'], e['T']['value'], 
+                                            e['rain'].get('1h'), e['clouds']))
+        
     
-    return forecast_results
+    return forecast_results, last_update
 
 def pretty_print_results(results):
     pretty_printed_results = ""
