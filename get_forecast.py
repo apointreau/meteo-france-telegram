@@ -1,6 +1,6 @@
 from meteofrance_api import MeteoFranceClient
 from datetime import datetime, timedelta
-from pytz import utc
+from pytz import utc, timezone
 
 french_days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi",
                "Dimanche"]
@@ -12,15 +12,15 @@ icon_to_emoji = {
     "p12bisj": '\U0001F326',
     "p13bisn": '\U0001F326',
     "p13bisj": '\U0001F326',
-    "p3n": '\U00002601',
-    "p3j": '\U00002601',
-    "p2j": '\U000026C5',
-    "p2n": '\U000026C5',
-    "p4n" : '\U0001F324',
-    "p4j" : '\U0001F324',
-    "p1j": '\U00002600',
-    "p1n": '\U0001F311',
-    "p5n": '\U0001F32B',
+    "p3n": '\U00002601', #éclaircies
+    "p3j": '\U00002601', #nuit éclairée
+    "p2j": '\U0001F324', #ciel voilé
+    "p2n": '\U0001F324', #nuit voilée
+    "p4n" : '\U00002600', # Très nuageux
+    "p4j" : '\U00002600', # Très nuageux
+    "p1j": '\U00002600\U00002600', #grand soleil
+    "p1n": '\U0001F311\U0001F311', #grande lune
+    "p5n": '\U0001F32B', 
     "p5j": '\U0001F32B',
     "p24n": '\U0001F9CA',
     "p24j": '\U0001F9CA',
@@ -48,15 +48,18 @@ def get24h_forecast(city, client, date_from, date_till) :
 
     # Get the daily forecast
     my_place_daily_forecast = my_place_weather_forecast.forecast
+    local_tz = timezone('Europe/PARIS')
     # print(my_place_daily_forecast)
-    date_from = utc.localize(date_from)
-    date_till = utc.localize(date_till)
+    date_from = local_tz.localize(date_from)
+    
+    date_till = local_tz.localize(date_till)
+    
     # now.astimezone(timezone('Europe/Paris'))
-   
+    
     for e in my_place_daily_forecast:
         
         forecast_date = utc.localize(datetime.utcfromtimestamp(e['dt']))
-        #forecast_date.astimezone(timezone('Europe/Paris'))
+        forecast_date = forecast_date.astimezone(local_tz)
 
         if forecast_date < date_from:
             pass
