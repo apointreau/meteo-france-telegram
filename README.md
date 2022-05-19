@@ -1,4 +1,4 @@
-# Un nouveau bot telegram qui fait la pluie :rain: et le beau temps :sun:
+# Un nouveau bot telegram qui fait la pluie :umbrella: et le beau temps :sunny:
 ## Vous saurez enfin quand partir de chez vous :)
 
 
@@ -10,7 +10,7 @@ Ce que j'ai tuilisé :
 
 - [Python Telegram Bot](https://github.com/python-telegram-bot/python-telegram-bot)
 - [Météo-France Python API](https://github.com/hacf-fr/meteofrance-api)
-- Du beau temps :sun:
+- Du beau temps :sunny:
 
 ## Notes :warning: :
 
