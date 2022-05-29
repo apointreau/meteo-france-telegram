@@ -53,6 +53,7 @@ def look_for_city(city: str, latitude=None, longitude=None):
 def get24h_forecast(city, client, date):
     """Test classical workflow usage with the Python library."""
 
+    
     forecast_results = []
     local_tz = timezone('Europe/PARIS')
     # Fetch weather forecast for the location
@@ -64,8 +65,10 @@ def get24h_forecast(city, client, date):
     # Get the daily forecast
     my_place_daily_forecast = my_place_weather_forecast.forecast
 
-    # print(my_place_daily_forecast)
+    #print(my_place_daily_forecast)
     date = local_tz.localize(date)
+    date_from = date - timedelta(hours=date.hour)
+    date_till = date + timedelta(hours=24 - date.hour)
 
     # now.astimezone(timezone('Europe/Paris'))
 
@@ -74,9 +77,9 @@ def get24h_forecast(city, client, date):
         forecast_date = utc.localize(datetime.utcfromtimestamp(e['dt']))
         forecast_date = forecast_date.astimezone(local_tz)
 
-        if forecast_date.day < date.day:
+        if forecast_date < date_from :
             pass
-        elif forecast_date.day > date.day:
+        elif forecast_date > date_till:
             break
         else:
             if ((date.day == datetime.now().day and forecast_date >= date)
@@ -86,6 +89,7 @@ def get24h_forecast(city, client, date):
                                         e['weather']['icon'], e['T']['value'],
                                         e['rain'].get('1h'), e['clouds']))
 
+    
     return forecast_results, last_update
 
 
